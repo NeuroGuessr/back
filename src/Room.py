@@ -21,8 +21,7 @@ class Room:
         self.configuration = configuration
         self.queue = asyncio.Queue()
         self.player_manager = PlayerManager()
-        self.connection_manager = ConnectionManager(
-            self.player_manager, self.queue)
+        self.connection_manager = ConnectionManager(self.player_manager, self.queue, room_id)
 
     def get_id(self):
         return self.id
@@ -35,6 +34,9 @@ class Room:
 
     def get_connection_manager(self):
         return self.connection_manager
+    
+    def get_player_manager(self):
+        return self.player_manager
 
     async def engine(self):
         print('ENGINE START')

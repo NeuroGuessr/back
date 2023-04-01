@@ -4,9 +4,10 @@ import asyncio
 
 
 class ConnectionManager:
-    def __init__(self, player_manager: PlayerManager, queue: asyncio.Queue):
+    def __init__(self, player_manager: PlayerManager, queue: asyncio.Queue, room_id: int):
         self.player_manager = player_manager
         self.queue = queue
+        self.room_id = room_id
 
     async def connect(self, websocket: WebSocket):
         try:
@@ -16,7 +17,8 @@ class ConnectionManager:
             while not accepted:
                 json_object = await websocket.receive_json()
                 name = json_object["name"]
-                if self.player_manager.add_player(name, websocket):
+                print(name)
+                if await self.player_manager.add_player(name, websocket):
                     accepted = True
                 else:
                     await self.send_duplicate_name_error(websocket, name)
@@ -35,8 +37,12 @@ class ConnectionManager:
         })
 
     async def broadcast(self, message: dict):
-        for player in self.players.values():
-            await player['socket'].send_json(message)
+        for player in self.player_manager.get_players_list():
+            try:
+                websocket = player.get_socket()
+                await websocket.send_json(message)
+            except Exception as e:
+                print("COULD NOT SEND TO:", player.get_name())
 
     def get_players(self):
         return self.players
@@ -44,7 +50,7 @@ class ConnectionManager:
     async def receive_messages(self, websocket: WebSocket, name: str):
         while True:
             message = await websocket.receive_json()
-            print("RECEIVE:", message)
+            print("RECEIVED:", message)
             await self.queue.put((name, message))
 
     async def disconnect_player(self, player: str):
@@ -52,9 +58,10 @@ class ConnectionManager:
         self.player_manager.remove_player(player)
         await self.update_players_list()
 
-    async def update_players_list(self):
+    async def update_room(self):
         message = {
-            "type": "players_list",
+            "type": "room",
+            "room_id": self.room_id,
             "players": self.player_manager.get_players_list()
         }
         await self.broadcast(message)
