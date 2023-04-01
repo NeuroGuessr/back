@@ -10,13 +10,11 @@ import json
 app = FastAPI()
 
 room_manager = RoomManager()
-
-
+room = Room(1, "")
+room_manager.add_room(room)
 
 @app.get("/")
 async def root():
-    room = Room(1, "")
-    room_manager.add_room(room)
     await room.engine()
     return "Up and running"
 
