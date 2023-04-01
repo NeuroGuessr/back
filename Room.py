@@ -23,10 +23,14 @@ class Room:
     async def engine(self):
         print("ENGINE START")
         while True:
-            data = await self.queue.get()
-            print('Q:', data)
-            if data["type"] == "start_game":
+            name, message = await self.queue.get()
+            print('Q:', message)
+            if message["type"] == "start_game":
                 await self.connection_manager.broadcast(self.create_level())
+
+            if message['type'] == 'choice':
+                pass
+
 
     def create_level(self):
         return {

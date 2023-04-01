@@ -4,7 +4,7 @@ import asyncio
 
 class ConnectionManager:
     def __init__(self, queue : asyncio.Queue):
-        self.sockets = {} #player nickname -> websocket
+        self.players = {} #player nickname -> {}
         self.queue = queue
         
     async def connect(self, websocket: WebSocket):
@@ -18,23 +18,25 @@ class ConnectionManager:
 
             #TODO: sprawdzenie nicku
             #TODO: blokowanie zasobu
-            self.sockets[name] = websocket
-            await self.receive_messages_from(name)
+            self.players[name] = {
+                'socket': websocket,
+                'score': 0
+            }
+            await self.receive_messages(websocket, name)
         except WebSocketDisconnect:
             print("DISCONNECTED:", name)
-            self.sockets.pop(name)
+            self.players.pop(name)
         
     async def broadcast(self, message: dict):
-        for player in self.sockets.keys():
-            await self.sockets[player].send_json(message)
+        for player in self.players.values():
+            await player['socket'].send_json(message)
             
-    def get_sockets(self):
-        return self.sockets
+    def get_players(self):
+        return self.players
 
-    async def receive_messages_from(self, name: str):
-        socket = self.sockets[name]
+    async def receive_messages(self, socket: WebSocket, name: str):
         while True:
             message = await socket.receive_json()
             print("RECEIVE:", message)
-            await self.queue.put(message)
+            await self.queue.put((name, message))
 
