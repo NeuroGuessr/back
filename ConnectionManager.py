@@ -24,8 +24,7 @@ class ConnectionManager:
             }
             await self.receive_messages(websocket, name)
         except WebSocketDisconnect:
-            print("DISCONNECTED:", name)
-            self.players.pop(name)
+            await self.disconnect_player(name)
         
     async def broadcast(self, message: dict):
         for player in self.players.values():
@@ -40,3 +39,16 @@ class ConnectionManager:
             print("RECEIVE:", message)
             await self.queue.put((name, message))
 
+    async def disconnect_player(self, player: str):
+        print("DISCONNECTED:", player)
+        self.players.pop(player)
+        await self.update_player_list()
+        
+    async def update_player_list(self):
+        message = {
+            "type": "players_list",
+            "players": list(self.players.keys())
+        }
+        await self.broadcast(message)
+        print(message)
+        

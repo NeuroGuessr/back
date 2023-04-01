@@ -25,11 +25,13 @@ class Room:
         while True:
             name, message = await self.queue.get()
             print('Q:', message)
-            if message["type"] == "start_game":
+            if message['type'] == 'start_game':
                 await self.connection_manager.broadcast(self.create_level())
 
             if message['type'] == 'choice':
                 pass
+            
+            
 
 
     def create_level(self):
