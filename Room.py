@@ -18,6 +18,6 @@ class Room:
     def get_websocket(self):
         return self.websocket
     
-    def set_websocket(websocket: WebSocket):
+    def set_websocket(self, websocket: WebSocket):
         self.websocket = websocket
     
