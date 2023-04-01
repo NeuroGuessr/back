@@ -1,10 +1,10 @@
-from fastapi import WebSocket
+from ConnectionManager import ConnectionManager
 
 class Room:
-    def __init__(self, id: int, configuration: str):
+    def __init__(self, id: int, configuration: str, connection_manager: ConnectionManager):
         self.id = id
         self.configuration = configuration
-        self.websocket = None
+        self.connection_manager = connection_manager
     
     def get_id(self):
         return self.id
@@ -15,9 +15,6 @@ class Room:
     def set_configuration(self, configuration: str):
         self.configuration = configuration
         
-    def get_websocket(self):
-        return self.websocket
-    
-    def set_websocket(self, websocket: WebSocket):
-        self.websocket = websocket
+    def get_connection_manager(self):
+        return self.connection_manager
     
