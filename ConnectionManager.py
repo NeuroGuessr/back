@@ -8,12 +8,13 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         connection_message = await websocket.receive_text()
-        json_object = json.load(connection_message)
+        json_object = json.loads(json.loads(connection_message))
         name = json_object["name"]
         #TODO: sprawdzenie nicku
         #TODO: blokowanie zasobu
         self.sockets[name] = websocket
         
+        await self.handle_client(websocket)
         # while True:
         #     data = await websocket.receive_text()
         #     await websocket.send_text(f"Message text was: {data}")
@@ -24,3 +25,9 @@ class ConnectionManager:
             
     def get_sockets(self):
         return self.sockets
+
+    async def handle_client(self, websocket: WebSocket):
+        while True:
+            data = await websocket.receive_text()
+            print(data)
+            await websocket.send_text(f"Message text was: {data}")

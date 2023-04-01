@@ -37,10 +37,9 @@ async def join_room(room_id: int):
 def list_players(room_id: int):
     sockets = room_manager.get_rooms()[room_id].get_connection_manager().get_sockets()
 
-    return json.dumps(sockets.keys())
+    return json.dumps(list(sockets.keys()))
 
 @app.websocket("/ws/room/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: int):
     manager = room_manager.get_rooms()[room_id].get_connection_manager()
     await manager.connect(websocket)
-    
