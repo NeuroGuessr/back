@@ -1,16 +1,13 @@
 from fastapi import FastAPI, WebSocket
-from enum import Enum
-from pydantic import BaseModel
 from RoomManager import RoomManager
 from Room import Room
 from uuid import uuid4
-from ConnectionManager import ConnectionManager
 from fastapi.staticfiles import StaticFiles
 import json
 import asyncio
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="../static"), name="static")
 
 room_manager = RoomManager()
 

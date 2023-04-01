@@ -7,7 +7,7 @@ class Room:
         self.configuration = configuration
         self.queue = asyncio.Queue()
         self.connection_manager = ConnectionManager(self.queue)
-        self.correct = {} #img -> label
+        self.correct = {}
     
     def get_id(self):
         return self.id
