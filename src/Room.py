@@ -1,28 +1,44 @@
 from ConnectionManager import ConnectionManager
+from PlayerManager import PlayerManager
 import asyncio
 
+# ========================================================
+LEVEL = {
+    "type": "level",
+    "images": ["1.jpg", "2.jpg", "3.jpg", "4.jpg"],
+            "labels": [
+                "Aaaaaa", "Bbbbb", "Ccccccccc", "Ddddd"
+    ]
+}
+CORRECT_LEVEL = {"1.jpg": "Aaaaaa", "2.jpg": "Bbbbb",
+                 "3.jpg": "Ccccccccc", "4.jpg": "Ddddd"}
+# ========================================================
+
+
 class Room:
-    def __init__(self, id: int, configuration: str):
-        self.id = id
+    def __init__(self, room_id: int, configuration: str):
+        self.id = room_id
         self.configuration = configuration
         self.queue = asyncio.Queue()
-        self.connection_manager = ConnectionManager(self.queue)
-        self.correct = {}
-    
+        self.player_manager = PlayerManager()
+        self.connection_manager = ConnectionManager(
+            self.player_manager, self.queue)
+
     def get_id(self):
         return self.id
-    
+
     def get_configuration(self):
         return self.configuration
-    
+
     def set_configuration(self, configuration: str):
         self.configuration = configuration
-        
+
     def get_connection_manager(self):
         return self.connection_manager
-    
+
     async def engine(self):
-        print("ENGINE START")
+        print('ENGINE START')
+
         while True:
             data = await self.queue.get()
             print('Q:', data)
@@ -31,27 +47,24 @@ class Room:
 
     async def handle_message(self, data):
         name, message = data
-        if message["type"] == "start_game":
-            await self.connection_manager.broadcast(self.create_level())
+        message_type = message['type']
 
-            if message['type'] == 'choice':
-                self.verify(name, message)
+        if message_type == 'start_game':
+            await self.handle_start_game()  
+        elif message_type == 'choice':
+            self.handle_choice(name, message['choices'])
 
+    async def handle_start_game(self):
+        await self.connection_manager.broadcast(LEVEL)
 
-    def create_level(self):
-        return {
-            "type": "level",
-            "images": [
-                "1.jpg", "2.jpg", "3.jpg", "4.jpg"
-            ],
-            "labels": [
-                "Aaaaaa", "Bbbbb", "Ccccccccc", "Ddddd"
-            ]
-        }
-        
-    def verify(self, name: str, message: str):
-        choices = message['choices']
-        for choice in choices.keys():
-            if correct[choice] == choices[choice]:
-                self.connection_manager.get_players()[name]['score'] += 1
-        
+    def handle_choice(self, name: str, choices: dir):
+        points = self.count_points(choices, CORRECT_LEVEL)
+        self.player_manager.add_score(name, points)
+
+    def count_points(self, name: str, choices: dir, correct: dir):
+        points = 0
+        for image, label in CORRECT_LEVEL.items():
+            if label == choices.get(image, None):
+                points += 1
+
+        return max(points-1, 0)

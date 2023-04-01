@@ -1,54 +1,61 @@
 from fastapi import WebSocket, WebSocketDisconnect
-import json
+from PlayerManager import PlayerManager
 import asyncio
 
+
 class ConnectionManager:
-    def __init__(self, queue : asyncio.Queue):
-        self.players = {} #player nickname -> {}
+    def __init__(self, player_manager: PlayerManager, queue: asyncio.Queue):
+        self.player_manager = player_manager
         self.queue = queue
-        
+
     async def connect(self, websocket: WebSocket):
         try:
             await websocket.accept()
-
-            json_object = await websocket.receive_json()
-            print("CONNECTED: ", json_object)
             
-            name = json_object["name"]
+            accepted = False
+            while not accepted:
+                json_object = await websocket.receive_json()
+                name = json_object["name"]
+                if self.player_manager.add_player(name, websocket):
+                    accepted = True
+                else:
+                    await self.send_duplicate_name_error(websocket, name)
 
-            #TODO: sprawdzenie nicku
-            #TODO: blokowanie zasobu
-            self.players[name] = {
-                'socket': websocket,
-                'score': 0
-            }
+            print("CONNECTED: ", name)
+
             await self.receive_messages(websocket, name)
+
         except WebSocketDisconnect:
             await self.disconnect_player(name)
-        
+
+    async def send_duplicate_name_error(self, websocket: WebSocket, name: str):
+        websocket.send_json({
+            'type': 'error', 
+            'error_message': f'User {name} exists in this room.'
+        })
+
     async def broadcast(self, message: dict):
         for player in self.players.values():
             await player['socket'].send_json(message)
-            
+
     def get_players(self):
         return self.players
 
-    async def receive_messages(self, socket: WebSocket, name: str):
+    async def receive_messages(self, websocket: WebSocket, name: str):
         while True:
-            message = await socket.receive_json()
+            message = await websocket.receive_json()
             print("RECEIVE:", message)
             await self.queue.put((name, message))
 
     async def disconnect_player(self, player: str):
         print("DISCONNECTED:", player)
-        self.players.pop(player)
-        await self.update_player_list()
-        
-    async def update_player_list(self):
+        self.player_manager.remove_player(player)
+        await self.update_players_list()
+
+    async def update_players_list(self):
         message = {
             "type": "players_list",
-            "players": list(self.players.keys())
+            "players": self.player_manager.get_players_list()
         }
         await self.broadcast(message)
-        print(message)
-        
+        print('BROADCAST:', message)
