@@ -24,17 +24,17 @@ class Room:
         print("ENGINE START")
         while True:
             data = await self.queue.get()
-            print('Q', data)
+            print('Q:', data)
             if data["type"] == "start_game":
-                self.connection_manager.broadcast(create_level())
+                await self.connection_manager.broadcast(self.create_level())
 
-    def create_level():
+    def create_level(self):
         return {
             "type": "level",
             "images": [
                 "1.jpg", "2.jpg", "3.jpg", "4.jpg"
             ],
             "labels": [
-                "1", "2", "3", "4"
+                "Aaaaaa", "Bbbbb", "Ccccccccc", "Ddddd"
             ]
         }

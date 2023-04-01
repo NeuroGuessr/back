@@ -7,14 +7,19 @@ from uuid import uuid4
 from ConnectionManager import ConnectionManager
 from fastapi.staticfiles import StaticFiles
 import json
+import asyncio
 
 app = FastAPI()
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 room_manager = RoomManager()
-room = Room(1, "")
-room_manager.add_room(room)
+
+def init_app():
+    room = Room(1, "")
+    room_manager.add_room(room)
+    return room.engine()
+
+asyncio.create_task(init_app())
 
 @app.get("/")
 async def root():
@@ -31,7 +36,6 @@ async def add_room():
     room_id = uuid4()
     room = Room(room_id, "")
     room_manager.add_room(room)
-    room.engine()
     return str(room_id)
 
 @app.get("/room/{room_id}")
