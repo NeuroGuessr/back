@@ -1,7 +1,8 @@
 class Room:
-    def __init__(self, id: int):
+    def __init__(self, id: int, configuration: str, websocket: WebSocket):
         self.id = id
-        self.configuration = None
+        self.configuration = configuration
+        self.websocket = websocket
     
     def get_id(self):
         return self.id
@@ -11,3 +12,7 @@ class Room:
     
     def set_configuration(self, configuration: str):
         self.configuration = configuration
+        
+    def get_websocket(self):
+        return self.websocket
+    

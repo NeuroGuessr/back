@@ -31,3 +31,11 @@ async def add_room():
 @app.get("/room/{room_id}")
 async def join_room(room_id: int):
     return "join room: " + str(room_id)
+
+@app.websocket("/ws/room/{room_id}")
+async def websocket_endpoint({room_id}: int, websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        await websocket.send_text(f"Message text was: {data}")
+    
