@@ -23,7 +23,6 @@ asyncio.create_task(init_app())
 
 @app.get("/")
 async def root():
-    await room.engine()
     return "Up and running"
 
 @app.get("/room")
