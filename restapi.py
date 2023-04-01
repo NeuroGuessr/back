@@ -9,6 +9,8 @@ app = FastAPI()
 
 room_manager = RoomManager()
 
+room_manager.add_room(Room(1, ""))
+
 @app.get("/")
 async def root():
     return "Up and running"
