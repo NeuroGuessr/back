@@ -25,4 +25,3 @@ class Room:
         while True:
             data = await self.queue.get()
             print('Q', data)
-            
