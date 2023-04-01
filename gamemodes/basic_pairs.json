@@ -1,0 +1,18 @@
+{
+  "elements": {
+    "images": {
+      "img_number": "choice_num"
+    },
+    "descriptions": {
+      "desc_number": "choice_num"
+    }
+  },
+  "rules": {
+    "img_desc_matching": "1-1",
+    "end_condition": "every_player_chose(&choice_num)",
+    "end_action": "show_scores()"
+  },
+  "variables": {
+    "choice_num": 4
+  }
+}
