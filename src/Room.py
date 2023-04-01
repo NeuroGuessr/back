@@ -1,6 +1,7 @@
 from ConnectionManager import ConnectionManager
 from PlayerManager import PlayerManager
 import asyncio
+from Timer import Timer
 
 # ========================================================
 LEVEL = {
@@ -16,12 +17,17 @@ CORRECT_LEVEL = {"1.jpg": "Aaaaaa", "2.jpg": "Bbbbb",
 
 
 class Room:
+    FINISH_LEVEL_POLLING_TIME = 1
+
     def __init__(self, room_id: int, configuration: str):
         self.id = room_id
         self.configuration = configuration
         self.queue = asyncio.Queue()
         self.player_manager = PlayerManager()
         self.connection_manager = ConnectionManager(self.player_manager, self.queue, room_id)
+        self.timer = Timer(self.queue)
+
+        self.level_number = 0
 
     def get_id(self) -> int:
         return self.id
@@ -41,6 +47,8 @@ class Room:
     async def engine(self) -> None:
         print('ENGINE START')
 
+        self.timer.remind(Room.FINISH_LEVEL_POLLING_TIME, 'check_finish_level')
+
         while True:
             data = await self.queue.get()
             print('Q:', data)
@@ -52,9 +60,11 @@ class Room:
         message_type = message['type']
 
         if message_type == 'start_game':
-            await self.handle_start_game()  
+            await self.handle_start_game()
         elif message_type == 'choice':
             self.handle_choice(name, message['choices'])
+        elif message_type == 'check_finish_level':
+            self.handle_check_finish_level()
 
     async def handle_start_game(self) -> None:
         await self.connection_manager.broadcast(LEVEL)
@@ -62,6 +72,16 @@ class Room:
     def handle_choice(self, name: str, choices: dir) -> None:
         points = self.count_points(choices, CORRECT_LEVEL)
         self.player_manager.add_score(name, points)
+
+    def handle_check_finish_level(self) -> None:
+        if self.if_finish_level():
+            print("FINISH LEVEL")
+
+        self.timer.remind(Room.FINISH_LEVEL_POLLING_TIME, 'check_finish_level')
+
+    def is_level_finished(self) -> bool:
+        players = self.player_manager.get_players_list()
+        return any(player.did_finish_level(self.level_number) for player in players)
 
     def count_points(self, name: str, choices: dir, correct: dir) -> int:
         points = 0
