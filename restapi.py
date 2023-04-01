@@ -11,10 +11,13 @@ app = FastAPI()
 
 room_manager = RoomManager()
 
-room_manager.add_room(Room(1, "", ConnectionManager()))
+
 
 @app.get("/")
 async def root():
+    room = Room(1, "")
+    room_manager.add_room(room)
+    await room.engine()
     return "Up and running"
 
 @app.get("/room")
@@ -25,8 +28,9 @@ async def list_rooms():
 @app.post("/room")
 async def add_room():
     room_id = uuid4()
-    room = Room(room_id, "", ConnectionManager())
+    room = Room(room_id, "")
     room_manager.add_room(room)
+    room.engine()
     return str(room_id)
 
 @app.get("/room/{room_id}")

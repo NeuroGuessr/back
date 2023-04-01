@@ -1,10 +1,12 @@
 from ConnectionManager import ConnectionManager
+import asyncio
 
 class Room:
-    def __init__(self, id: int, configuration: str, connection_manager: ConnectionManager):
+    def __init__(self, id: int, configuration: str):
         self.id = id
         self.configuration = configuration
-        self.connection_manager = connection_manager
+        self.queue = asyncio.Queue()
+        self.connection_manager = ConnectionManager(self.queue)
     
     def get_id(self):
         return self.id
@@ -18,3 +20,9 @@ class Room:
     def get_connection_manager(self):
         return self.connection_manager
     
+    async def engine(self):
+        print("ENGINE START")
+        while True:
+            data = await self.queue.get()
+            print('Q', data)
+            
