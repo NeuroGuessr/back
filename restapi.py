@@ -5,6 +5,7 @@ from RoomManager import RoomManager
 from Room import Room
 from uuid import uuid4
 from ConnectionManager import ConnectionManager
+import json
 
 app = FastAPI()
 
@@ -40,5 +41,6 @@ def list_players(room_id: int):
 
 @app.websocket("/ws/room/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: int):
-    room_manager.get_rooms()[room_id].get_connection_manager().connect(websocket)
+    manager = room_manager.get_rooms()[room_id].get_connection_manager()
+    await manager.connect(websocket)
     
