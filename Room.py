@@ -1,8 +1,10 @@
+from fastapi import WebSocket
+
 class Room:
-    def __init__(self, id: int, configuration: str, websocket: WebSocket):
+    def __init__(self, id: int, configuration: str):
         self.id = id
         self.configuration = configuration
-        self.websocket = websocket
+        self.websocket = None
     
     def get_id(self):
         return self.id
@@ -15,4 +17,7 @@ class Room:
         
     def get_websocket(self):
         return self.websocket
+    
+    def set_websocket(websocket: WebSocket):
+        self.websocket = websocket
     

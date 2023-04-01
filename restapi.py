@@ -21,20 +21,18 @@ async def list_rooms():
 @app.post("/room")
 async def add_room():
     room_id = uuid4()
-    room = Room(room_id)
+    room = Room(room_id, "")
     room_manager.add_room(room)
-    
-    #TODO: tworzenie web socketa
-    
-    return "add room: " + str(room_id)
+    return str(room_id)
 
 @app.get("/room/{room_id}")
 async def join_room(room_id: int):
     return "join room: " + str(room_id)
 
 @app.websocket("/ws/room/{room_id}")
-async def websocket_endpoint({room_id}: int, websocket: WebSocket):
+async def websocket_endpoint(room_id: int, websocket: WebSocket):
     await websocket.accept()
+    room_manager.get_rooms()[room_id].set_websocket(websocket)
     while True:
         data = await websocket.receive_text()
         await websocket.send_text(f"Message text was: {data}")
