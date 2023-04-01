@@ -23,22 +23,22 @@ class Room:
         self.player_manager = PlayerManager()
         self.connection_manager = ConnectionManager(self.player_manager, self.queue, room_id)
 
-    def get_id(self):
+    def get_id(self) -> int:
         return self.id
 
-    def get_configuration(self):
+    def get_configuration(self) -> object:
         return self.configuration
 
-    def set_configuration(self, configuration: str):
+    def set_configuration(self, configuration: str) -> None:
         self.configuration = configuration
 
-    def get_connection_manager(self):
+    def get_connection_manager(self) -> ConnectionManager:
         return self.connection_manager
     
-    def get_player_manager(self):
+    def get_player_manager(self) -> PlayerManager:
         return self.player_manager
 
-    async def engine(self):
+    async def engine(self) -> None:
         print('ENGINE START')
 
         while True:
@@ -47,7 +47,7 @@ class Room:
 
             await self.handle_message(data)
 
-    async def handle_message(self, data):
+    async def handle_message(self, data) -> None:
         name, message = data
         message_type = message['type']
 
@@ -56,14 +56,14 @@ class Room:
         elif message_type == 'choice':
             self.handle_choice(name, message['choices'])
 
-    async def handle_start_game(self):
+    async def handle_start_game(self) -> None:
         await self.connection_manager.broadcast(LEVEL)
 
-    def handle_choice(self, name: str, choices: dir):
+    def handle_choice(self, name: str, choices: dir) -> None:
         points = self.count_points(choices, CORRECT_LEVEL)
         self.player_manager.add_score(name, points)
 
-    def count_points(self, name: str, choices: dir, correct: dir):
+    def count_points(self, name: str, choices: dir, correct: dir) -> int:
         points = 0
         for image, label in CORRECT_LEVEL.items():
             if label == choices.get(image, None):

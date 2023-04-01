@@ -21,8 +21,7 @@ async def list_rooms():
 @app.get("/room/{room_id}/player")
 def list_players(room_id: int):
     player_manager = room_manager.get_room(room_id).get_player_manager()
-    players = player_manager.get_players_list()
-    player_infos = [player.get_info() for player in players]
+    player_infos = player_manager.get_player_infos()
     return json.dumps(player_infos)
 
 @app.websocket("/ws/room")

@@ -6,7 +6,7 @@ class RoomManager:
     def __init__(self):
         self.rooms = {}
         
-    def create_room(self):
+    def create_room(self) -> int:
         # room_id = uuid4()
         room_id = 1 # TODO: change to uuid
 
@@ -18,11 +18,11 @@ class RoomManager:
         asyncio.create_task(new_room.engine())
         return room_id
         
-    def remove_room(self, room_id: int):
+    def remove_room(self, room_id: int) -> None:
         del self.rooms[room_id]
         
-    def get_room(self, room_id: int):
+    def get_room(self, room_id: int) -> Room:
         return self.rooms[room_id]
 
-    def get_rooms(self):
+    def get_rooms(self) -> dict:
         return self.rooms
