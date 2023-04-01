@@ -8,17 +8,21 @@ class ConnectionManager:
         self.queue = queue
         
     async def connect(self, websocket: WebSocket):
-        await websocket.accept()
+        try:
+            await websocket.accept()
 
-        json_object = await websocket.receive_json()
-        print("NEW USER: ", json_object)
-        
-        name = json_object["name"]
+            json_object = await websocket.receive_json()
+            print("CONNECTED: ", json_object)
+            
+            name = json_object["name"]
 
-        #TODO: sprawdzenie nicku
-        #TODO: blokowanie zasobu
-        self.sockets[name] = websocket
-        await self.receive_messages_from(name)
+            #TODO: sprawdzenie nicku
+            #TODO: blokowanie zasobu
+            self.sockets[name] = websocket
+            await self.receive_messages_from(name)
+        except WebSocketDisconnect:
+            print("DISCONNECTED:", name)
+            self.sockets.pop(name)
         
     async def broadcast(self, message: dict):
         for player in self.sockets.keys():
@@ -33,3 +37,4 @@ class ConnectionManager:
             message = await socket.receive_json()
             print("RECEIVE:", message)
             await self.queue.put(message)
+
