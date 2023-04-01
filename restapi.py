@@ -32,7 +32,13 @@ async def add_room():
 async def join_room(room_id: int):
     return "join room: " + str(room_id)
 
+@app.get("/room/{room_id}/player")
+def list_players(room_id: int):
+    sockets = room_manager.get_rooms()[room_id].get_connection_manager().get_sockets()
+
+    return json.dumps(sockets.keys())
+
 @app.websocket("/ws/room/{room_id}")
 async def websocket_endpoint(room_id: int, websocket: WebSocket):
-    room_manager.get_rooms()[room_id].get_connection_manager.connect(websocket)
+    room_manager.get_rooms()[room_id].get_connection_manager().connect(websocket)
     
