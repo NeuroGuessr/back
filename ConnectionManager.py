@@ -21,3 +21,6 @@ class ConnectionManager:
     async def broadcast(self, message: dict):
         for player in self.sockets.keys():
             await self.sockets[player].send_text(json.dumps(message))
+            
+    def get_sockets(self):
+        return self.sockets
