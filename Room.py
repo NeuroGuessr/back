@@ -7,6 +7,7 @@ class Room:
         self.configuration = configuration
         self.queue = asyncio.Queue()
         self.connection_manager = ConnectionManager(self.queue)
+        self.correct = {} #img -> label
     
     def get_id(self):
         return self.id
@@ -34,7 +35,7 @@ class Room:
             await self.connection_manager.broadcast(self.create_level())
 
             if message['type'] == 'choice':
-                pass
+                self.verify(name, message)
 
 
     def create_level(self):
@@ -47,3 +48,10 @@ class Room:
                 "Aaaaaa", "Bbbbb", "Ccccccccc", "Ddddd"
             ]
         }
+        
+    def verify(self, name: str, message: str):
+        choices = message['choices']
+        for choice in choices.keys():
+            if correct[choice] == choices[choice]:
+                self.connection_manager.get_players()[name]['score'] += 1
+        
