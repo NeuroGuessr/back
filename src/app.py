@@ -23,15 +23,20 @@ def list_players(room_id: int):
     player_manager = room_manager.get_room(room_id).get_player_manager()
     player_infos = player_manager.get_player_infos()
     return json.dumps(player_infos)
-    
+
+@app.websocket("/ws/room/1")
+async def endpoint(websocket: WebSocket):
+    await websocket_room(websocket, "new", "abc")
+
 @app.websocket("/ws/room/{room_id}/player/{name}")
-async def websocket_join_room(websocket: WebSocket, room_id: int, player: str):
+async def websocket_room(websocket: WebSocket, room_id, name: str):
     try:
         if room_id == 'new':
             room_id = room_manager.create_room()
 
         connection_manager = room_manager.get_room(room_id).get_connection_manager()
-        await connection_manager.connect(websocket)
+        print(name)
+        await connection_manager.connect(websocket, name)
     except RuntimeError as e:
         await websocket.send_json({
             'type': 'error',

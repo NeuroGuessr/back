@@ -13,7 +13,6 @@ class ConnectionManager:
         if self.room.is_game_running():
             raise RuntimeError("Game is running in this room.")
         
-        name = None
         try:
             await websocket.accept()
             self.player_manager.add_player(name, websocket)

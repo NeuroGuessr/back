@@ -7,16 +7,12 @@ class PlayerManager:
         self.players = {}
         self.lock = asyncio.Lock()
 
-    async def add_player(self, name: str, websocket: WebSocket) -> None:
-        await self.lock.acquire()
-        try:
-            if name in self.players.keys():
-                raise RuntimeError(f'User {name} exists in this room.')
-            
-            self.players[name] = Player(name, websocket)
+    def add_player(self, name: str, websocket: WebSocket) -> None:
+        print(name, self.players.keys())
+        if name in self.players.keys():
+            raise RuntimeError(f'User {name} exists in this room.')
         
-        finally:
-            self.lock.release()
+        self.players[name] = Player(name, websocket)
 
     def remove_player(self, name: str) -> None:
         self.players.pop(name, None)
