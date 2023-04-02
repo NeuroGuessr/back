@@ -1,12 +1,12 @@
 import json
 
 class JsonEvaluator:
-    def __init__(self, functions):
+    def __init__(self, functions, json_path):
         self.function_dict = {}
         for function in functions:
             self.function_dict[function.__name__] = function
-
         self.variable_dictionary = {}
+        self.import_variables(json_path)
 
     def import_variables(self, json_path):
         with open(json_path, 'r') as f:
@@ -15,6 +15,10 @@ class JsonEvaluator:
                 self.variable_dictionary[var_name] = json_dict['variables'][var_name]
         return self.variable_dictionary
 
+    def get_variable_value(self, var_name):
+        if var_name not in self.variable_dictionary:
+            raise AttributeError("Variable "+var_name+" reference without import from json")
+        return self.variable_dictionary[var_name]
 
     def find_end_parenthesis(self, string, parenthesis_ind):
         open_counter = 0

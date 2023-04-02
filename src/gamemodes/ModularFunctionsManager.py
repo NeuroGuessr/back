@@ -1,7 +1,3 @@
-# handle_choice
-# handle_check_finish_level -> dodać konkretne funkcje z checkami
-# handle_level_time_elapsed -> konkretne funkcje do zakończenia gry
-
 class ModularFunctionsManager:
 
     def __init__(self, player_manager, room):
