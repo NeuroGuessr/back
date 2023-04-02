@@ -21,4 +21,11 @@ class JsonEvaluatorManager:
         return self.json_evaluator.evaluate_from_string(string)
 
     def check_finish_level(self):
-        return self.evalaute(self.level_json['rules']['end_condition'])
+        return self.string_to_bool(self.evalaute(self.level_json['rules']['end_condition']))
+
+    def string_to_bool(self, bool_as_string):
+        if bool_as_string == "True":
+            return True
+        if bool_as_string == "False":
+            return False
+        raise ValueError("Trying to parse "+str(bool_as_string) +" as bool.")
