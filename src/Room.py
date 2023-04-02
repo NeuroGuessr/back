@@ -154,11 +154,11 @@ class Room:
 
         return max(points-1, 0)
 
-    def get_current_level(self):
+    def get_current_level(self) -> dir:
         level = GAME[self.level_number]
         level['time'] = Room.LEVEL_TIME
         level['level_number'] = self.level_number
         return level
     
-    def get_levels_number(self):
-        len(GAME)
+    def get_levels_number(self) -> int:
+        return len(GAME)
