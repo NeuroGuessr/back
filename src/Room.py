@@ -8,31 +8,31 @@ from uuid import uuid4
 
 # ========================================================
 
-LEVEL0 = {
-    "type": "level",
-    "images": ["1.jpg", "2.jpg", "3.jpg", "4.jpg"],
-            "labels": [
-                "Aaaaaa", "Bbbbb", "Ccccccccc", "Ddddd"
-    ]
-}
-LEVEL1 = {
-    "type": "level",
-    "images": ["5.jpg", "6.jpg", "7.jpg", "12.jpg"],
-            "labels": [
-                "Aaaaaa", "Bbbbb", "Ccccccccc", "Ddddd"
-    ]
-}
-LEVEL2 = {
-    "type": "level",
-    "images": ["13.jpg", "14.jpg", "15.jpg", "1.jpg"],
-            "labels": [
-                "Aaaaaa", "Bbbbb", "Ccccccccc", "Ddddd"
-    ]
-}
-CORRECT_LEVEL = {"1.jpg": "Aaaaaa", "2.jpg": "Bbbbb",
-                 "3.jpg": "Ccccccccc", "4.jpg": "Ddddd"}
-
-GAME = [LEVEL0, LEVEL1, LEVEL2]
+# LEVEL0 = {
+#     "type": "level",
+#     "images": ["1.jpg", "2.jpg", "3.jpg", "4.jpg"],
+#             "labels": [
+#                 "Aaaaaa", "Bbbbb", "Ccccccccc", "Ddddd"
+#     ]
+# }
+# LEVEL1 = {
+#     "type": "level",
+#     "images": ["5.jpg", "6.jpg", "7.jpg", "12.jpg"],
+#             "labels": [
+#                 "Aaaaaa", "Bbbbb", "Ccccccccc", "Ddddd"
+#     ]
+# }
+# LEVEL2 = {
+#     "type": "level",
+#     "images": ["13.jpg", "14.jpg", "15.jpg", "1.jpg"],
+#             "labels": [
+#                 "Aaaaaa", "Bbbbb", "Ccccccccc", "Ddddd"
+#     ]
+# }
+# CORRECT_LEVEL = {"1.jpg": "Aaaaaa", "2.jpg": "Bbbbb",
+#                  "3.jpg": "Ccccccccc", "4.jpg": "Ddddd"}
+#
+# GAME = [LEVEL0, LEVEL1, LEVEL2]
 # ========================================================
 
 class Room:
@@ -171,10 +171,12 @@ class Room:
         return max(points-1, 0)
 
     def get_current_level(self) -> dir:
-        level = GAME[self.level_number]
+
+        print("LENGTH OF LEVELS", len(self.levels))
+        level = self.levels[self.level_number]
         level['time'] = self.jsonEvaluatorManager.get_level_time()
         level['level_number'] = self.level_number
         return level
     
     def get_levels_number(self) -> int:
-        return len(GAME)
+        return len(self.levels)
