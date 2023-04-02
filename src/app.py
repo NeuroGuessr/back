@@ -4,8 +4,19 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 import json
 from LevelManager import LevelManager
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.mount("/static", StaticFiles(directory="../static"), name="static")
 
 room_manager = RoomManager()

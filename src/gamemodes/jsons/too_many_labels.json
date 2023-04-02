@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "end_condition": "all_players_finished() or level_time_elapsed()"
+  },
+  "variables": {
+    "label_num": 8,
+    "image_num": 4
+  }
+}
