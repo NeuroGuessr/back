@@ -50,12 +50,9 @@ class Room:
         self.level_time_elapsed = False
 
         self.jsonEvaluatorManager = JsonEvaluatorManager()
+        self.level_manager = level_manager
         self.jsonEvaluatorManager.load_configuration("gamemodes/jsons/basic_pairs.json", self)
 
-        self.levels = level_manager.generate_level(
-            self.jsonEvaluatorManager.get_stages(),
-            self.jsonEvaluatorManager.get_stage_size()
-        )
 
     def get_id(self) -> int:
         return self.id
@@ -120,6 +117,11 @@ class Room:
     # STATE TRANSITION FUNCTIONS
     async def start_level(self) -> None:
         print("START LEVEL:", self.level_number)
+
+        self.levels = self.level_manager.generate_level(
+            self.jsonEvaluatorManager.get_stages(),
+            self.jsonEvaluatorManager.get_stage_size()
+        )
 
         self.player_manager.start_level_for_all_players()
         await self.connection_manager.broadcast(self.get_current_level())
