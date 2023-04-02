@@ -57,6 +57,8 @@ class Room:
             self.jsonEvaluatorManager.get_stage_size()
         )
 
+        self.choices = None
+
     def get_id(self) -> int:
         return self.id
     
@@ -164,13 +166,14 @@ class Room:
         # return all(player.did_finish_level() for player in players)
 
     def count_points(self, choices: dir) -> int:
-        points = 0
-        for image, label in self.get_current_level()['correct'].items():
-            print("POINTS:", image, label, choices.get(image, None))
-            if label == choices.get(image, None):
-                points += 1
-
-        return max(points-1, 0)
+        self.choices = choices
+        return self.jsonEvaluatorManager.get_scores()
+        # points = 0
+        # for image, label in self.get_current_level()['correct'].items():
+        #     print("POINTS:", image, label, choices.get(image, None))
+        #     if label == choices.get(image, None):
+        #         points += 1
+        # return max(points-1, 0)
 
     def get_current_level(self) -> dir:
 

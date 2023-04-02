@@ -25,6 +25,9 @@ class JsonEvaluatorManager:
         except:
             raise Exception("Could not open or parse " + json_path)
 
+    def get_scores(self):
+        return int(self.json_evaluator.evaluate_from_string(self.level_json['rules']['score_function']))
+
     def get_stages(self):
         return int(self.get_variable_value('stages'))
 

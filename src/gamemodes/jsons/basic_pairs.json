@@ -1,10 +1,9 @@
 {
   "rules": {
-    "end_condition": "all_players_finished() or level_time_elapsed()"
+    "end_condition": "all_players_finished() or level_time_elapsed()",
+    "score_function": "get_all_minus_one()"
   },
   "variables": {
-    "label_num": 4,
-    "image_num": 4,
     "level_time": 50,
     "stages": 2,
     "stage_size": 2
