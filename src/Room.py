@@ -150,6 +150,7 @@ class Room:
 
         self.game_id = None
         self.player_manager.finish_game_for_all_players()
+        self.connection_manager.update_room()
         await self.connection_manager.broadcast({'type': 'game_finished'})
 
     #================================================================
