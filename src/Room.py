@@ -1,10 +1,12 @@
 from ConnectionManager import ConnectionManager
 from PlayerManager import PlayerManager
+from gamemodes.JsonEvaluatorManager import JsonEvaluatorManager
 import asyncio
 from Timer import Timer
 from uuid import uuid4
 
 # ========================================================
+
 LEVEL0 = {
     "type": "level",
     "images": ["1.jpg", "2.jpg", "3.jpg", "4.jpg"],
@@ -48,6 +50,8 @@ class Room:
         self.level_number = 0
         self.game_id = None
         self.level_time_elapsed = False
+
+        self.jsonEvaluatorManager = JsonEvaluatorManager("gamemodes/basic_pairs.json", self)
 
     def get_id(self) -> int:
         return self.id
@@ -105,7 +109,8 @@ class Room:
             self.player_manager.add_score(name, points)
 
     async def handle_check_finish_level(self, message) -> None:
-        if self.is_level_finished() or self.level_time_elapsed:
+        # if self.is_level_finished() or self.level_time_elapsed:
+        if self.jsonEvaluatorManager.check_finish_level():
             await self.finish_level()
         else:
             self.timer.remind(Room.FINISH_LEVEL_POLLING_TIME, {'type': 'check_finish_level'})
