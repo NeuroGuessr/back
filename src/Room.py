@@ -167,7 +167,9 @@ class Room:
 
     def count_points(self, choices: dir) -> int:
         self.choices = choices
-        return self.jsonEvaluatorManager.get_scores()
+        score = self.jsonEvaluatorManager.get_scores()
+        print("SCOREEEEEEEEEEEE", score)
+        return score
         # points = 0
         # for image, label in self.get_current_level()['correct'].items():
         #     print("POINTS:", image, label, choices.get(image, None))
