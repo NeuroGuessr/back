@@ -41,6 +41,7 @@ class ConnectionManager:
     async def broadcast(self, message: dict) -> None:
         print('BROADCAST:', message)
         for player in self.player_manager.get_players_list():
+            message['your_name'] = player.get_name()
             try:
                 websocket = player.get_socket()
                 await websocket.send_json(message)

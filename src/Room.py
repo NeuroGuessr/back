@@ -35,7 +35,7 @@ GAME = [LEVEL0, LEVEL1, LEVEL2]
 
 class Room:
     FINISH_LEVEL_POLLING_TIME = 1
-    LEVEL_TIME = 5
+    LEVEL_TIME = 10
 
     def __init__(self, room_id: int, configuration: str):
         self.id = room_id
