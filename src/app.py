@@ -23,10 +23,6 @@ def list_players(room_id: int):
     player_infos = player_manager.get_player_infos()
     return json.dumps(player_infos)
 
-@app.websocket("/ws/room/1")
-async def endpoint(websocket: WebSocket):
-    await websocket_room(websocket, "new", "abc")
-
 @app.websocket("/ws/room/{room_id}/player/{name}")
 async def websocket_room(websocket: WebSocket, room_id, name: str):
     try:
