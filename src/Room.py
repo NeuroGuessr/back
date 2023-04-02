@@ -172,7 +172,7 @@ class Room:
             if label == choices.get(image, None):
                 points += 1
 
-        return max(points-1, 0)
+        return points
 
     def get_current_level(self) -> dir:
 
