@@ -29,8 +29,7 @@ async def root():
 
 @app.get("/room")
 async def list_rooms():
-    # await level_manager.fetch_all(2, 2)
-    # stages = level_manager.generate_level(2,2)
+    await level_manager.fetch_all(2, 2)
     rooms = [room.get_id() for room in room_manager.get_rooms().values()]
     return json.dumps(rooms)
 
@@ -42,6 +41,10 @@ def list_players(room_id: int):
 
 @app.post("/room")
 async def create_room():
+    await level_manager.fetch_all(
+        2,
+        2
+    )
     room_id = room_manager.create_room()
     return JSONResponse({'room_id': room_id})
 
