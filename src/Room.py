@@ -103,14 +103,13 @@ class Room:
         await self.start_level()
 
     def handle_choice(self, name, message) -> None:
-        # TODO: level number
-        if True or message['level_number'] == self.level_number:
+        if message['level_number'] == self.level_number:
             points = self.count_points(message['choices'])
             self.player_manager.add_score(name, points)
 
     async def handle_check_finish_level(self, message) -> None:
-        # if self.is_level_finished() or self.level_time_elapsed:
-        if self.jsonEvaluatorManager.check_finish_level():
+        if self.is_level_finished() or self.level_time_elapsed:
+        # if self.jsonEvaluatorManager.check_finish_level():
             await self.finish_level()
         else:
             self.timer.remind(Room.FINISH_LEVEL_POLLING_TIME, {'type': 'check_finish_level'})
