@@ -50,7 +50,8 @@ class Room:
         self.game_id = None
         self.level_time_elapsed = False
 
-        self.jsonEvaluatorManager = JsonEvaluatorManager("gamemodes/jsons/basic_pairs.json", self)
+        self.jsonEvaluatorManager = JsonEvaluatorManager()
+        self.jsonEvaluatorManager.load_configuration("gamemodes/jsons/basic_pairs.json", self)
 
     def get_id(self) -> int:
         return self.id

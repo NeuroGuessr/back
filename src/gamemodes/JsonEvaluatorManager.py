@@ -2,12 +2,15 @@ import json
 
 from gamemodes.JsonEvaluator import JsonEvaluator
 from gamemodes.ModularFunctionsManager import ModularFunctionsManager
-import os
-from os import path
 
 
 class JsonEvaluatorManager:
-    def __init__(self, json_path, room):
+    def __init__(self):
+        self.modular_functions_manager = None
+        self.json_evaluator = None
+        self.level_json = None
+
+    def load_configuration(self, json_path, room):
         self.modular_functions_manager = ModularFunctionsManager(room.player_manager, room)
         self.json_evaluator = JsonEvaluator(
             self.modular_functions_manager.get_modular_functions(),
@@ -28,11 +31,11 @@ class JsonEvaluatorManager:
     def get_variable_value(self, var_name):
         return self.json_evaluator.get_variable_value(var_name)
 
-    def evalaute(self, string):
+    def evaluate(self, string):
         return self.json_evaluator.evaluate_from_string(string)
 
     def check_finish_level(self):
-        return self.string_to_bool(self.evalaute(self.level_json['rules']['end_condition']))
+        return self.string_to_bool(self.evaluate(self.level_json['rules']['end_condition']))
 
     def string_to_bool(self, bool_as_string):
         if bool_as_string == "True":
