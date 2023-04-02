@@ -176,6 +176,7 @@ class Room:
 
         print("LENGTH OF LEVELS", len(self.levels))
         level = self.levels[self.level_number]
+        level['type'] = 'level'
         level['time'] = self.jsonEvaluatorManager.get_level_time()
         level['level_number'] = self.level_number
         return level
