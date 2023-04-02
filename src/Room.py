@@ -37,7 +37,6 @@ GAME = [LEVEL0, LEVEL1, LEVEL2]
 
 class Room:
     FINISH_LEVEL_POLLING_TIME = 1
-    LEVEL_TIME = 30
 
     def __init__(self, room_id: int, configuration: str):
         self.id = room_id
@@ -51,7 +50,7 @@ class Room:
         self.game_id = None
         self.level_time_elapsed = False
 
-        self.jsonEvaluatorManager = JsonEvaluatorManager("gamemodes/basic_pairs.json", self)
+        self.jsonEvaluatorManager = JsonEvaluatorManager("gamemodes/jsons/basic_pairs.json", self)
 
     def get_id(self) -> int:
         return self.id
@@ -108,7 +107,6 @@ class Room:
             self.player_manager.add_score(name, points)
 
     async def handle_check_finish_level(self, message) -> None:
-        # if self.is_level_finished() or self.level_time_elapsed:
         if self.jsonEvaluatorManager.check_finish_level():
             await self.finish_level()
         else:
@@ -117,6 +115,7 @@ class Room:
     async def handle_level_time_elapsed(self, message) -> None:
         if message['level_number'] == self.level_number and message['game_id'] == self.game_id:
             self.level_time_elapsed = True
+
 
     # STATE TRANSITION FUNCTIONS
     async def start_level(self) -> None:
@@ -127,7 +126,10 @@ class Room:
 
         self.level_time_elapsed = False
         self.timer.remind(Room.FINISH_LEVEL_POLLING_TIME, {'type': 'check_finish_level'})
-        self.timer.remind(Room.LEVEL_TIME, {'type': 'level_time_elapsed', 'level_number': self.level_number, 'game_id': self.game_id})
+        self.timer.remind(
+            self.jsonEvaluatorManager.get_level_time(),
+            {'type': 'level_time_elapsed', 'level_number': self.level_number, 'game_id': self.game_id}
+        )
 
     async def finish_level(self) -> None:
         print("FINISH LEVEL:", self.level_number)
@@ -171,7 +173,7 @@ class Room:
 
     def get_current_level(self) -> dir:
         level = GAME[self.level_number]
-        level['time'] = Room.LEVEL_TIME
+        level['time'] = self.jsonEvaluatorManager.get_level_time()
         level['level_number'] = self.level_number
         return level
     
