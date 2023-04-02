@@ -10,7 +10,7 @@ class RoomManager:
         room_id = self.unique_id
         self.unique_id += 1
 
-        new_room = Room(room_id, '')
+        new_room = Room(room_id)
         self.rooms[room_id] = new_room
 
         print('CREATE ROOM:', room_id)

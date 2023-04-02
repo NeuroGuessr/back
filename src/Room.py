@@ -39,9 +39,8 @@ class Room:
     FINISH_LEVEL_POLLING_TIME = 1
     LEVEL_TIME = 30
 
-    def __init__(self, room_id: int, configuration: str):
+    def __init__(self, room_id: int):
         self.id = room_id
-        self.configuration = configuration
         self.queue = asyncio.Queue()
         self.player_manager = PlayerManager()
         self.connection_manager = ConnectionManager(self.player_manager, self.queue, self)
@@ -58,12 +57,6 @@ class Room:
     
     def is_game_running(self) -> bool:
         return self.game_id is not None
-
-    def get_configuration(self) -> object:
-        return self.configuration
-
-    def set_configuration(self, configuration: str) -> None:
-        self.configuration = configuration
 
     def get_connection_manager(self) -> ConnectionManager:
         return self.connection_manager
