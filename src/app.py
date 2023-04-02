@@ -21,8 +21,6 @@ app.mount("/static", StaticFiles(directory="../static"), name="static")
 
 room_manager = RoomManager()
 
-level_manager = LevelManager()
-
 @app.get("/")
 async def root():
     return "Up and running"
