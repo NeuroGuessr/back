@@ -103,6 +103,7 @@ class Room:
     def handle_choice(self, name, message) -> None:
         if message['level_number'] == self.level_number:
             points = self.count_points(message['choices'])
+            print(points)
             self.player_manager.add_score(name, points)
 
     async def handle_check_finish_level(self, message) -> None:
@@ -165,6 +166,7 @@ class Room:
     def count_points(self, choices: dir) -> int:
         points = 0
         for image, label in CORRECT_LEVEL.items():
+            print("POINTS:", image, label, choices.get(image, None))
             if label == choices.get(image, None):
                 points += 1
 
