@@ -32,7 +32,6 @@ CORRECT_LEVEL = {"1.jpg": "Aaaaaa", "2.jpg": "Bbbbb",
 GAME = [LEVEL0, LEVEL1, LEVEL2]
 # ========================================================
 
-
 class Room:
     FINISH_LEVEL_POLLING_TIME = 1
     LEVEL_TIME = 5

@@ -2,6 +2,7 @@ from fastapi import FastAPI, WebSocket
 from RoomManager import RoomManager
 from fastapi.staticfiles import StaticFiles
 import json
+from ImageFetchManager import ImageFetchManager
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="../static"), name="static")
@@ -9,12 +10,15 @@ app.mount("/static", StaticFiles(directory="../static"), name="static")
 room_manager = RoomManager()
 room_manager.create_room()
 
+image_fetch_manager = ImageFetchManager()
+
 @app.get("/")
 async def root():
     return "Up and running"
 
 @app.get("/room")
 async def list_rooms():
+    await image_fetch_manager.fetch_categories()
     rooms = [room.get_id() for room in room_manager.get_rooms().values()]
     return json.dumps(rooms)
 
