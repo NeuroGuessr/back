@@ -18,7 +18,8 @@ async def root():
 
 @app.get("/room")
 async def list_rooms():
-    await level_manager.fetch_all()
+    await level_manager.fetch_all(1, 4)
+    print(level_manager.generate_level(1, 4))
     rooms = [room.get_id() for room in room_manager.get_rooms().values()]
     return json.dumps(rooms)
 
