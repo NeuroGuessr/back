@@ -2,27 +2,20 @@ from fastapi import WebSocket, WebSocketDisconnect
 from PlayerManager import PlayerManager
 import asyncio
 
-
 class ConnectionManager:
-    def __init__(self, player_manager: PlayerManager, queue: asyncio.Queue, room_id: int):
+    def __init__(self, player_manager: PlayerManager, queue: asyncio.Queue, room):
         self.player_manager = player_manager
         self.queue = queue
-        self.room_id = room_id
+        self.room = room
 
-    async def connect(self, websocket: WebSocket) -> None:
-        name = None
+    async def connect(self, websocket: WebSocket, name: str) -> None:
+
+        if self.room.is_game_running():
+            raise RuntimeError("Game is running in this room.")
+        
         try:
             await websocket.accept()
-            
-            accepted = False
-            while not accepted:
-                json_object = await websocket.receive_json()
-                name = json_object["name"]
-                print(name)
-                if await self.player_manager.add_player(name, websocket):
-                    accepted = True
-                else:
-                    await self.send_duplicate_name_error(websocket, name)
+            self.player_manager.add_player(name, websocket)
 
             print("CONNECTED: ", name)
 
@@ -32,15 +25,10 @@ class ConnectionManager:
         except WebSocketDisconnect:
             await self.disconnect(name)
 
-    async def send_duplicate_name_error(self, websocket: WebSocket, name: str) -> None:
-        websocket.send_json({
-            'type': 'error', 
-            'error_message': f'User {name} exists in this room.'
-        })
-
     async def broadcast(self, message: dict) -> None:
         print('BROADCAST:', message)
         for player in self.player_manager.get_players_list():
+            message['your_name'] = player.get_name()
             try:
                 websocket = player.get_socket()
                 await websocket.send_json(message)
@@ -60,10 +48,10 @@ class ConnectionManager:
 
     async def update_room(self) -> None:
         player_infos = self.player_manager.get_player_infos()
-
+        
         message = {
             "type": "room",
-            "room_id": self.room_id,
+            "room_id": self.room.get_id(),
             "players": player_infos
         }
 

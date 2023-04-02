@@ -7,17 +7,12 @@ class PlayerManager:
         self.players = {}
         self.lock = asyncio.Lock()
 
-    async def add_player(self, name: str, websocket: WebSocket) -> bool:
-        await self.lock.acquire()
-        try:
-            if name in self.players.keys():
-                return False
-
-            self.players[name] = Player(name, websocket)
-            return True
+    def add_player(self, name: str, websocket: WebSocket) -> None:
+        print(name, self.players.keys())
+        if name in self.players.keys():
+            raise RuntimeError(f'User {name} exists in this room.')
         
-        finally:
-            self.lock.release()
+        self.players[name] = Player(name, websocket)
 
     def remove_player(self, name: str) -> None:
         self.players.pop(name, None)
@@ -39,9 +34,9 @@ class PlayerManager:
     def finish_game_for_all_players(self) -> None:
         for player in self.players.values():
             player.finish_game()
-    
+            
     def get_player_infos(self) -> dict:
-        return {name: player.get_info() for name, player in self.players.items()}
+        return [player.get_info() for player in self.players.values()]
 
     def get_players_list(self) -> list:
         return list(self.players.values())

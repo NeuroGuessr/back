@@ -9,7 +9,7 @@
   },
   "rules": {
     "img_desc_matching": "1-1",
-    "end_condition": "every_player_chose(&choice_num)",
+    "end_condition": "all_players_finished() or level_time_elapsed()",
     "end_action": "show_scores()"
   },
   "variables": {

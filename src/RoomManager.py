@@ -1,16 +1,16 @@
 from Room import Room
-from uuid import uuid4
 import asyncio
 
 class RoomManager:
     def __init__(self):
         self.rooms = {}
+        self.unique_id = 0
         
     def create_room(self) -> int:
-        # room_id = uuid4()
-        room_id = 1 # TODO: change to uuid
+        room_id = self.unique_id
+        self.unique_id += 1
 
-        new_room = Room(room_id, '')
+        new_room = Room(room_id)
         self.rooms[room_id] = new_room
 
         print('CREATE ROOM:', room_id)
@@ -22,6 +22,8 @@ class RoomManager:
         del self.rooms[room_id]
         
     def get_room(self, room_id: int) -> Room:
+        if room_id not in self.rooms:
+            raise RuntimeError(f"Room {room_id} doesn't exists")
         return self.rooms[room_id]
 
     def get_rooms(self) -> dict:

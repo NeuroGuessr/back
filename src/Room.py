@@ -1,10 +1,12 @@
 from ConnectionManager import ConnectionManager
 from PlayerManager import PlayerManager
+from gamemodes.JsonEvaluatorManager import JsonEvaluatorManager
 import asyncio
 from Timer import Timer
 from uuid import uuid4
 
 # ========================================================
+
 LEVEL0 = {
     "type": "level",
     "images": ["1.jpg", "2.jpg", "3.jpg", "4.jpg"],
@@ -34,28 +36,26 @@ GAME = [LEVEL0, LEVEL1, LEVEL2]
 
 class Room:
     FINISH_LEVEL_POLLING_TIME = 1
-    LEVEL_TIME = 5
+    LEVEL_TIME = 30
 
-    def __init__(self, room_id: int, configuration: str):
+    def __init__(self, room_id: int):
         self.id = room_id
-        self.configuration = configuration
         self.queue = asyncio.Queue()
         self.player_manager = PlayerManager()
-        self.connection_manager = ConnectionManager(self.player_manager, self.queue, room_id)
+        self.connection_manager = ConnectionManager(self.player_manager, self.queue, self)
         self.timer = Timer(self.queue)
 
         self.level_number = 0
         self.game_id = None
         self.level_time_elapsed = False
 
+        self.jsonEvaluatorManager = JsonEvaluatorManager("gamemodes/basic_pairs.json", self)
+
     def get_id(self) -> int:
         return self.id
-
-    def get_configuration(self) -> object:
-        return self.configuration
-
-    def set_configuration(self, configuration: str) -> None:
-        self.configuration = configuration
+    
+    def is_game_running(self) -> bool:
+        return self.game_id is not None
 
     def get_connection_manager(self) -> ConnectionManager:
         return self.connection_manager
@@ -67,10 +67,13 @@ class Room:
         print('ENGINE START')
 
         while True:
-            data = await self.queue.get()
-            print('Q:', data)
+            try:
+                data = await self.queue.get()
+                print('Q:', data)
 
-            await self.handle_message(data)
+                await self.handle_message(data)
+            except Exception as e:
+                print("ERROR HANDLING MESSAGE: ", e)
 
     async def handle_message(self, data) -> None:
         name, message = data
@@ -91,13 +94,14 @@ class Room:
         self.level_number = 0
         await self.start_level()
 
-    def handle_choice(self, message) -> None:
+    def handle_choice(self, name, message) -> None:
         if message['level_number'] == self.level_number:
-            points = self.count_points(message['choices'], CORRECT_LEVEL)
-            self.player_manager.add_score(message['name'], points)
+            points = self.count_points(message['choices'])
+            self.player_manager.add_score(name, points)
 
     async def handle_check_finish_level(self, message) -> None:
-        if self.is_level_finished() or self.level_time_elapsed:
+        # if self.is_level_finished() or self.level_time_elapsed:
+        if self.jsonEvaluatorManager.check_finish_level():
             await self.finish_level()
         else:
             self.timer.remind(Room.FINISH_LEVEL_POLLING_TIME, {'type': 'check_finish_level'})
@@ -143,7 +147,11 @@ class Room:
 
     def is_level_finished(self) -> bool:
         players = self.player_manager.get_players_list()
-        return all(player.did_finish_level() for player in players)
+        for player in players:
+            if not player.did_finish_level():
+                return False
+        return True
+        # return all(player.did_finish_level() for player in players)
 
     def count_points(self, choices: dir) -> int:
         points = 0

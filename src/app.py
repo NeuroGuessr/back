@@ -1,6 +1,7 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, HTTPException
 from RoomManager import RoomManager
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 import json
 from ImageFetchManager import ImageFetchManager
 
@@ -8,7 +9,6 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="../static"), name="static")
 
 room_manager = RoomManager()
-room_manager.create_room()
 
 image_fetch_manager = ImageFetchManager()
 
@@ -28,12 +28,19 @@ def list_players(room_id: int):
     player_infos = player_manager.get_player_infos()
     return json.dumps(player_infos)
 
-@app.websocket("/ws/room")
-async def websocket_create_room(websocket: WebSocket):
+@app.post("/room")
+async def create_room():
     room_id = room_manager.create_room()
-    await websocket_join_room(websocket, room_id)
-                             
-@app.websocket("/ws/room/{room_id}")
-async def websocket_join_room(websocket: WebSocket, room_id: int):
-    connection_manager = room_manager.get_room(room_id).get_connection_manager()
-    await connection_manager.connect(websocket)
+    return JSONResponse({'room_id': room_id})
+
+@app.websocket("/ws/room/{room_id}/player/{name}")
+async def websocket_room(websocket: WebSocket, room_id: int, name: str):
+    try:
+        connection_manager = room_manager.get_room(room_id).get_connection_manager()
+        await connection_manager.connect(websocket, name)
+    except RuntimeError as e:
+        await websocket.send_json({
+            'type': 'error',
+            'message': str(e),
+        })
+    
