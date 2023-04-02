@@ -121,6 +121,7 @@ class Room:
     async def finish_level(self) -> None:
         print("FINISH LEVEL:", self.level_number)
 
+        self.clear_queue()
         await self.connection_manager.update_room()
 
         self.level_number += 1
@@ -137,6 +138,10 @@ class Room:
         await self.connection_manager.broadcast({'type': 'game_finished'})
 
     #================================================================
+    def clear_queue(self):
+        while not self.queue.empty():
+            self.queue.get()
+
     def is_level_finished(self) -> bool:
         players = self.player_manager.get_players_list()
         return all(player.did_finish_level() for player in players)
