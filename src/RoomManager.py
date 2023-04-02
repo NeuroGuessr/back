@@ -1,14 +1,15 @@
 from Room import Room
-from uuid import uuid4
 import asyncio
 
 class RoomManager:
     def __init__(self):
         self.rooms = {}
+        self.unique_id = 0
         
     def create_room(self) -> int:
-        room_id = uuid4()
-        
+        room_id = self.unique_id
+        self.unique_id += 1
+
         new_room = Room(room_id, '')
         self.rooms[room_id] = new_room
 
