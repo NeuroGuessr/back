@@ -165,7 +165,7 @@ class Room:
 
     def count_points(self, choices: dir) -> int:
         points = 0
-        for image, label in CORRECT_LEVEL.items():
+        for image, label in self.get_current_level()['correct'].items():
             print("POINTS:", image, label, choices.get(image, None))
             if label == choices.get(image, None):
                 points += 1
