@@ -1,6 +1,6 @@
 from httpx import AsyncClient
 import json
-from random import sample
+from random import choice
 
 class LevelManager:
     def __init__(self):
@@ -10,7 +10,7 @@ class LevelManager:
         self.images = []
     
     def generate_level(self, stages: int, stage_size: int):
-        return sample(self.images, 1)
+        return choice(self.images)
     
     async def fetch_all(self, stages: int, stage_size: int):
         await self.fetch_categories()
