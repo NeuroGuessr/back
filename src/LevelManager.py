@@ -1,6 +1,7 @@
 from httpx import AsyncClient
 import json
 from random import choice
+import asyncio
 
 class LevelManager:
     def __init__(self):
@@ -8,6 +9,8 @@ class LevelManager:
         self.URL = "http://localhost:8001/"
         self.categories = {}
         self.images = []
+
+        asyncio.create_task(self.fetch_all(2, 2))
     
     def generate_level(self, stages: int, stage_size: int):
         return choice(self.images)
@@ -19,6 +22,8 @@ class LevelManager:
             response = await self.fetch_images(stages, stage_size, key)
             self.images.append(response)
         
+        print("FETCHED ALL CATEGORIES")
+
     async def fetch_categories(self):
         url = self.URL + "category"
         response = await AsyncClient().get(url)
