@@ -7,7 +7,6 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="../static"), name="static")
 
 room_manager = RoomManager()
-room_manager.create_room()
 
 @app.get("/")
 async def root():

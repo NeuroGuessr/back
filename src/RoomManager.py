@@ -7,9 +7,8 @@ class RoomManager:
         self.rooms = {}
         
     def create_room(self) -> int:
-        # room_id = uuid4()
-        room_id = 1 # TODO: change to uuid
-
+        room_id = uuid4()
+        
         new_room = Room(room_id, '')
         self.rooms[room_id] = new_room
 
