@@ -10,7 +10,7 @@ class LevelManager:
         self.categories = {}
         self.images = []
 
-        asyncio.create_task(self.fetch_all(2, 2))
+        asyncio.create_task(self.fetch_all(3, 4))
     
     def generate_level(self, stages: int, stage_size: int):
         return choice(self.images)
