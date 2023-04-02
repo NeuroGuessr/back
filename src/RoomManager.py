@@ -22,6 +22,8 @@ class RoomManager:
         del self.rooms[room_id]
         
     def get_room(self, room_id: int) -> Room:
+        if room_id not in self.rooms:
+            raise RuntimeError(f"Room {room_id} doesn't exists")
         return self.rooms[room_id]
 
     def get_rooms(self) -> dict:

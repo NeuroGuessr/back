@@ -8,24 +8,15 @@ class ConnectionManager:
         self.queue = queue
         self.room = room
 
-    async def connect(self, websocket: WebSocket) -> None:
+    async def connect(self, websocket: WebSocket, name: str) -> None:
 
         if self.room.is_game_running():
             raise RuntimeError("Game is running in this room.")
-
+        
         name = None
         try:
             await websocket.accept()
-            
-            accepted = False
-            while not accepted:
-                json_object = await websocket.receive_json()
-                name = json_object["name"]
-                print(name)
-                if await self.player_manager.add_player(name, websocket):
-                    accepted = True
-                else:
-                    await self.send_duplicate_name_error(websocket, name)
+            self.player_manager.add_player(name, websocket)
 
             print("CONNECTED: ", name)
 
@@ -34,12 +25,6 @@ class ConnectionManager:
 
         except WebSocketDisconnect:
             await self.disconnect(name)
-
-    async def send_duplicate_name_error(self, websocket: WebSocket, name: str) -> None:
-        websocket.send_json({
-            'type': 'error', 
-            'error_message': f'User {name} exists in this room.'
-        })
 
     async def broadcast(self, message: dict) -> None:
         print('BROADCAST:', message)

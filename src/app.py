@@ -23,22 +23,18 @@ def list_players(room_id: int):
     player_manager = room_manager.get_room(room_id).get_player_manager()
     player_infos = player_manager.get_player_infos()
     return json.dumps(player_infos)
-
-@app.websocket("/ws/room")
-async def websocket_create_room(websocket: WebSocket):
-    await open_socket(websocket)
-
-@app.websocket("/ws/room/{room_id}")
-async def websocket_join_room(websocket: WebSocket, room_id: int):
-    await open_socket(websocket, room_id)
     
-async def open_socket(websocket: WebSocket, room_id = None):
+@app.websocket("/ws/room/{room_id}/player/{name}")
+async def websocket_join_room(websocket: WebSocket, room_id: int, player: str):
     try:
-        if room_id is None:
+        if room_id == 'new':
             room_id = room_manager.create_room()
 
         connection_manager = room_manager.get_room(room_id).get_connection_manager()
         await connection_manager.connect(websocket)
     except RuntimeError as e:
-        raise HTTPException(status_code=409, detail=str(e))
-        
+        await websocket.send_json({
+            'type': 'error',
+            'message': str(e),
+        })
+    
