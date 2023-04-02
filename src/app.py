@@ -3,14 +3,14 @@ from RoomManager import RoomManager
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 import json
-from ImageFetchManager import ImageFetchManager
+from LevelManager import LevelManager
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="../static"), name="static")
 
 room_manager = RoomManager()
 
-image_fetch_manager = ImageFetchManager()
+level_manager = LevelManager()
 
 @app.get("/")
 async def root():
@@ -18,6 +18,7 @@ async def root():
 
 @app.get("/room")
 async def list_rooms():
+    await level_manager.fetch_all()
     rooms = [room.get_id() for room in room_manager.get_rooms().values()]
     return json.dumps(rooms)
 
