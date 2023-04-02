@@ -125,7 +125,7 @@ class Room:
         await self.connection_manager.update_room()
 
         self.level_number += 1
-        if self.level_number < len(GAME):
+        if self.level_number < self.get_levels_number():
             await self.start_level()
         else:
             await self.finish_game()
