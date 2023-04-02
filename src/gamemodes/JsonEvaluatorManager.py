@@ -25,8 +25,14 @@ class JsonEvaluatorManager:
         except:
             raise Exception("Could not open or parse " + json_path)
 
+    def get_stages(self):
+        return int(self.get_variable_value('stages'))
+
+    def get_stage_size(self):
+        return int(self.get_variable_value('stage_size'))
+
     def get_level_time(self):
-        return self.get_variable_value('level_time')
+        return int(self.get_variable_value('level_time'))
 
     def get_variable_value(self, var_name):
         return self.json_evaluator.get_variable_value(var_name)

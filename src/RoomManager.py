@@ -1,16 +1,20 @@
 from Room import Room
 import asyncio
 
+from LevelManager import LevelManager
+
+
 class RoomManager:
     def __init__(self):
         self.rooms = {}
         self.unique_id = 0
+        self.level_manager = LevelManager()
         
     def create_room(self) -> int:
         room_id = self.unique_id
         self.unique_id += 1
 
-        new_room = Room(room_id)
+        new_room = Room(room_id, self.level_manager)
         self.rooms[room_id] = new_room
 
         print('CREATE ROOM:', room_id)

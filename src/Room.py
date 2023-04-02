@@ -1,5 +1,6 @@
 from ConnectionManager import ConnectionManager
 from PlayerManager import PlayerManager
+from LevelManager import LevelManager
 from gamemodes.JsonEvaluatorManager import JsonEvaluatorManager
 import asyncio
 from Timer import Timer
@@ -37,7 +38,7 @@ GAME = [LEVEL0, LEVEL1, LEVEL2]
 class Room:
     FINISH_LEVEL_POLLING_TIME = 1
 
-    def __init__(self, room_id: int):
+    def __init__(self, room_id: int, level_manager: LevelManager):
         self.id = room_id
         self.queue = asyncio.Queue()
         self.player_manager = PlayerManager()
@@ -50,6 +51,11 @@ class Room:
 
         self.jsonEvaluatorManager = JsonEvaluatorManager()
         self.jsonEvaluatorManager.load_configuration("gamemodes/jsons/basic_pairs.json", self)
+
+        self.levels = level_manager.generate_level(
+            self.jsonEvaluatorManager.get_stages(),
+            self.jsonEvaluatorManager.get_stage_size()
+        )
 
     def get_id(self) -> int:
         return self.id
