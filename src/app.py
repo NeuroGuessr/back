@@ -18,7 +18,6 @@ async def root():
 
 @app.get("/room")
 async def list_rooms():
-    await image_fetch_manager.fetch_categories()
     rooms = [room.get_id() for room in room_manager.get_rooms().values()]
     return json.dumps(rooms)
 
