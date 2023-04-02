@@ -2,14 +2,17 @@ from fastapi import WebSocket, WebSocketDisconnect
 from PlayerManager import PlayerManager
 import asyncio
 
-
 class ConnectionManager:
-    def __init__(self, player_manager: PlayerManager, queue: asyncio.Queue, room_id: int):
+    def __init__(self, player_manager: PlayerManager, queue: asyncio.Queue, room):
         self.player_manager = player_manager
         self.queue = queue
-        self.room_id = room_id
+        self.room = room
 
     async def connect(self, websocket: WebSocket) -> None:
+
+        if self.room.is_game_running():
+            raise RuntimeError("Game is running in this room.")
+
         name = None
         try:
             await websocket.accept()
@@ -61,10 +64,10 @@ class ConnectionManager:
 
     async def update_room(self) -> None:
         player_infos = self.player_manager.get_player_infos()
-
+        
         message = {
             "type": "room",
-            "room_id": self.room_id,
+            "room_id": self.room.get_id(),
             "players": player_infos
         }
 

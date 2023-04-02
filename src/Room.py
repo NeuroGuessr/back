@@ -35,14 +35,14 @@ GAME = [LEVEL0, LEVEL1, LEVEL2]
 
 class Room:
     FINISH_LEVEL_POLLING_TIME = 1
-    LEVEL_TIME = 10
+    LEVEL_TIME = 30
 
     def __init__(self, room_id: int, configuration: str):
         self.id = room_id
         self.configuration = configuration
         self.queue = asyncio.Queue()
         self.player_manager = PlayerManager()
-        self.connection_manager = ConnectionManager(self.player_manager, self.queue, room_id)
+        self.connection_manager = ConnectionManager(self.player_manager, self.queue, self)
         self.timer = Timer(self.queue)
 
         self.level_number = 0
@@ -51,6 +51,9 @@ class Room:
 
     def get_id(self) -> int:
         return self.id
+    
+    def is_game_running(self) -> bool:
+        return self.game_id is not None
 
     def get_configuration(self) -> object:
         return self.configuration
@@ -68,10 +71,13 @@ class Room:
         print('ENGINE START')
 
         while True:
-            data = await self.queue.get()
-            print('Q:', data)
+            try:
+                data = await self.queue.get()
+                print('Q:', data)
 
-            await self.handle_message(data)
+                await self.handle_message(data)
+            except Exception as e:
+                print("ERROR HANDLING MESSAGE: ", e)
 
     async def handle_message(self, data) -> None:
         name, message = data
@@ -92,10 +98,11 @@ class Room:
         self.level_number = 0
         await self.start_level()
 
-    def handle_choice(self, message) -> None:
-        if message['level_number'] == self.level_number:
-            points = self.count_points(message['choices'], CORRECT_LEVEL)
-            self.player_manager.add_score(message['name'], points)
+    def handle_choice(self, name, message) -> None:
+        # TODO: level number
+        if True or message['level_number'] == self.level_number:
+            points = self.count_points(message['choices'])
+            self.player_manager.add_score(name, points)
 
     async def handle_check_finish_level(self, message) -> None:
         if self.is_level_finished() or self.level_time_elapsed:
@@ -144,7 +151,11 @@ class Room:
 
     def is_level_finished(self) -> bool:
         players = self.player_manager.get_players_list()
-        return all(player.did_finish_level() for player in players)
+        for player in players:
+            if not player.did_finish_level():
+                return False
+        return True
+        # return all(player.did_finish_level() for player in players)
 
     def count_points(self, choices: dir) -> int:
         points = 0

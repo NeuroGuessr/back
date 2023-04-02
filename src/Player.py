@@ -9,7 +9,9 @@ class Player:
         self.finished_level = False
 
     def add_score(self, new_points: int) -> None:
-        self.scores.append(new_points)
+        if not self.finished_level:
+            self.game_score += new_points
+            self.finished_level = True
     
     def get_socket(self) -> WebSocket:
         return self.websocket
@@ -22,6 +24,7 @@ class Player:
             'name': self.name,
             'total_score': self.total_score,
             'game_score': self.game_score,
+            'finished_level': self.finished_level,
         }
     
     def finish_game(self) -> None:
@@ -32,4 +35,5 @@ class Player:
         self.finished_level = False
 
     def did_finish_level(self) -> bool:
+        print(self.finished_level)
         return self.finished_level

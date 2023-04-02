@@ -39,9 +39,9 @@ class PlayerManager:
     def finish_game_for_all_players(self) -> None:
         for player in self.players.values():
             player.finish_game()
-    
+            
     def get_player_infos(self) -> dict:
-        return {name: player.get_info() for name, player in self.players.items()}
+        return [player.get_info() for player in self.players.values()]
 
     def get_players_list(self) -> list:
         return list(self.players.values())
